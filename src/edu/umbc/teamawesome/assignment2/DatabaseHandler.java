@@ -124,7 +124,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		pinfo.setOrient_y(cursor.getFloat(8));
 		pinfo.setOrient_z(cursor.getFloat(9));
 		pinfo.setLx(cursor.getFloat(10));
-		pinfo.setLx(cursor.getFloat(11));
+		pinfo.setProx(cursor.getFloat(11));
 		pinfo.setActivity(cursor.getString(12));
 		return pinfo;		
 	}
