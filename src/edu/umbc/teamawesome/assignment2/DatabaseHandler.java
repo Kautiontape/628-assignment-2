@@ -28,6 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ORIENT_Y = "orient_y";
     private static final String KEY_ORIENT_Z = "orient_z";	
     private static final String KEY_LX = "lx";
+    private static final String KEY_PROX = "prox";
     private static final String KEY_ACTIVITY = "activity";
     
     public DatabaseHandler(Context context) {
@@ -48,6 +49,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_ORIENT_Y + " REAL,"
 				+ KEY_ORIENT_Z + " REAL,"
 				+ KEY_LX + " REAL,"
+				+ KEY_PROX + " REAL,"
 				+ KEY_ACTIVITY + " TEXT" + ")";
 		db.execSQL(CREATE_PINFO_TABLE);
 	}
@@ -73,6 +75,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    values.put(KEY_ORIENT_Y, pinfo.getOrient_y());
 	    values.put(KEY_ORIENT_Z, pinfo.getOrient_z());
 	    values.put(KEY_LX, pinfo.getLx());
+	    values.put(KEY_PROX, pinfo.getProx());
 	    values.put(KEY_ACTIVITY, pinfo.getActivity());
 	    
 	    db.insert(TABLE_PINFO, null, values);
@@ -86,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		
 		Cursor cursor = db.query(TABLE_PINFO, new String[] {
 				KEY_ID, KEY_TIME, KEY_LONGITUDE, KEY_LATITUDE, KEY_ACCEL_X, KEY_ACCEL_Y,
-				KEY_ACCEL_Z, KEY_ORIENT_X, KEY_ORIENT_Y, KEY_ORIENT_Z, KEY_LX, KEY_ACTIVITY
+				KEY_ACCEL_Z, KEY_ORIENT_X, KEY_ORIENT_Y, KEY_ORIENT_Z, KEY_LX, KEY_PROX, KEY_ACTIVITY
 			}, KEY_ID + "=?", new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null)
 			cursor.moveToFirst();
@@ -120,8 +123,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		pinfo.setOrient_x(cursor.getFloat(7));
 		pinfo.setOrient_y(cursor.getFloat(8));
 		pinfo.setOrient_z(cursor.getFloat(9));
-		pinfo.setLx(cursor.getDouble(10));
-		pinfo.setActivity(cursor.getString(11));
+		pinfo.setLx(cursor.getFloat(10));
+		pinfo.setLx(cursor.getFloat(11));
+		pinfo.setActivity(cursor.getString(12));
 		return pinfo;		
 	}
 	
@@ -152,6 +156,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    values.put(KEY_ORIENT_Y, pinfo.getOrient_y());
 	    values.put(KEY_ORIENT_Z, pinfo.getOrient_z());
 	    values.put(KEY_LX, pinfo.getLx());
+	    values.put(KEY_PROX, pinfo.getProx());
 	    values.put(KEY_ACTIVITY, pinfo.getActivity());
 	    
 	    db.update(TABLE_PINFO, values, KEY_ID + " = ?",
