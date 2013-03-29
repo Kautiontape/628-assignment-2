@@ -1,5 +1,8 @@
 package edu.umbc.teamawesome.assignment2;
 
+import java.util.Date;
+import java.util.Locale;
+
 public class PinInformation {
 	int id;
 	long time;
@@ -119,6 +122,6 @@ public class PinInformation {
 	
 	@Override
 	public String toString() {
-		return "<" + this.getLongitude() + ", " + this.getLatitude() + ">";
+		return String.valueOf(getId()) + ": " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(getTime()));
 	}
 }
