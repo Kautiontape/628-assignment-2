@@ -3,12 +3,10 @@
 
     <string name="app_name">Assignment2</string>
     <string name="action_settings">Settings</string>
-    <string name="one_sec">One second...</string>
     <string name="clearpins">Clear Pins</string>
     <string name="noactivity">Click here to set your Activity</string>
     
     <string name="ok">OK</string>
-    <string name="clear">Clear</string>
     <string name="cancel">Cancel</string>
 
 </resources>
