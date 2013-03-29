@@ -13,7 +13,7 @@ import android.util.Log;
 public class DatabaseHandler extends SQLiteOpenHelper {
 	/* http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/ */
 	
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "assignment2";
     private static final String TABLE_PINFO = "pinfo";
     
