@@ -18,7 +18,8 @@ public class PinInformation {
 	float orient_y;
 	float orient_z;
 	
-	double lx;
+	float lx;
+	float prox;
 	
 	String activity;
 	
@@ -104,12 +105,20 @@ public class PinInformation {
 		this.orient_z = orient_z;
 	}
 
-	public double getLx() {
+	public float getLx() {
 		return lx;
 	}
 
-	public void setLx(double lx) {
+	public void setLx(float lx) {
 		this.lx = lx;
+	}
+	
+	public float getProx() {
+		return prox;
+	}
+	
+	public void setProx(float prox) {
+		this.prox = prox;
 	}
 
 	public String getActivity() {
