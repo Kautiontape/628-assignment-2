@@ -37,7 +37,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private float[] orient_r = new float[9];
 	private float[] orient = new float[3];
 	private float[] magnet = new float[3];
-	private double lx = 0;	
+	private float lx = 0;
+	private float prox = 0;
 	private String activity = "";
 	
 	private int pins = 0;
@@ -85,6 +86,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		pin.setOrient_y(orient[1]);
 		pin.setOrient_z(orient[2]);
 		pin.setLx(lx);
+		pin.setProx(prox);
 		pin.setActivity(activity);
 		
 		Log.d(getPackageName(), "Added new pin");
@@ -126,10 +128,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 		Sensor accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		Sensor magnetometer = manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		Sensor light = manager.getDefaultSensor(Sensor.TYPE_LIGHT);
+		Sensor proximity = manager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
-		manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-		manager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
-		manager.registerListener(this, light, SensorManager.SENSOR_DELAY_UI);
+		manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		manager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+		manager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
+		manager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 	
 	private void registerInterfaceListeners() {
@@ -138,18 +142,22 @@ public class MainActivity extends Activity implements SensorEventListener {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				PinInformation pin = (PinInformation)arg0.getItemAtPosition(position);
+				
+				String address = "";
+				
 				String disp = String.format(Locale.US,
 						"Time: %s" + 
 						"%n<%f, %f>" +
 						"%nAccel: (%.2f, %.2f, %.2f)" +
 						"%nOrient: (%.2f, %.2f, %.2f)" +
 						"%nLx: %.2f" +
-						(pin.getActivity().length() > 0 ? "%nActivity: %s" : ""),
+						"%nProximity: %.2f" +
+						(address.length() > 0 ? "%nAddress: " + address : "") +
+						(pin.getActivity().length() > 0 ? "%nActivity: " + pin.getActivity() : ""),
 						new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime())),
 						pin.getLongitude(), pin.getLatitude(), pin.getAccel_x(), 
 						pin.getAccel_y(), pin.getAccel_z(), pin.getOrient_x(), 
-						pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), 
-						pin.getActivity()
+						pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), pin.getProx()
 				);
 				Toast.makeText(getApplicationContext(), disp, Toast.LENGTH_SHORT).show();
 			}
@@ -238,6 +246,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 			this.magnet[2] = event.values[2];
 		case Sensor.TYPE_LIGHT:
 			this.lx = event.values[0];
+		case Sensor.TYPE_PROXIMITY:
+			this.prox = event.values[0];
 		default:
 			break;
 		}
@@ -252,5 +262,4 @@ public class MainActivity extends Activity implements SensorEventListener {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
 }
