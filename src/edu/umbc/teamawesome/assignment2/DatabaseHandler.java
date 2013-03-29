@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 	/* http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/ */
@@ -38,7 +39,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String CREATE_PINFO_TABLE = "CREATE TABLE " + TABLE_PINFO + " ("
 				+ KEY_ID + " INTEGER PRIMARY KEY,"
 				+ KEY_TIME + " INTEGER,"
-						+ KEY_LONGITUDE + " REAL,"
+				+ KEY_LONGITUDE + " REAL,"
 				+ KEY_LATITUDE + " REAL,"
 				+ KEY_ACCEL_X + " REAL,"
 				+ KEY_ACCEL_Y + " REAL,"
@@ -76,6 +77,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    
 	    db.insert(TABLE_PINFO, null, values);
 	    db.close();
+	    
+	    Log.d("Datbase", "Pin added at " + pinfo.getTime());
 	}
 	
 	public PinInformation getPin(int id) {
@@ -87,21 +90,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			}, KEY_ID + "=?", new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null)
 			cursor.moveToFirst();
-		
-		PinInformation pinfo = new PinInformation();
-		pinfo.setId(cursor.getInt(0));
-		pinfo.setTime(cursor.getInt(1));
-		pinfo.setLongitude(cursor.getFloat(2));
-		pinfo.setLatitude(cursor.getFloat(3));
-		pinfo.setAccel_x(cursor.getDouble(4));
-		pinfo.setAccel_y(cursor.getDouble(5));
-		pinfo.setAccel_z(cursor.getDouble(6));
-		pinfo.setOrient_x(cursor.getDouble(7));
-		pinfo.setOrient_y(cursor.getDouble(8));
-		pinfo.setOrient_z(cursor.getDouble(9));
-		pinfo.setLx(cursor.getDouble(10));
-		pinfo.setActivity(cursor.getString(11));
-		return pinfo;
+		return getPinFromCursor(cursor);
 	}
 	
 	public List<PinInformation> getAllPins() {
@@ -111,25 +100,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(select, null);
 		
 		if (cursor.moveToFirst()) {
-			do {				
-				PinInformation pinfo = new PinInformation();
-				pinfo.setId(cursor.getInt(0));
-				pinfo.setTime(cursor.getInt(1));
-				pinfo.setLongitude(cursor.getFloat(2));
-				pinfo.setLatitude(cursor.getFloat(3));
-				pinfo.setAccel_x(cursor.getDouble(4));
-				pinfo.setAccel_y(cursor.getDouble(5));
-				pinfo.setAccel_z(cursor.getDouble(6));
-				pinfo.setOrient_x(cursor.getDouble(7));
-				pinfo.setOrient_y(cursor.getDouble(8));
-				pinfo.setOrient_z(cursor.getDouble(9));
-				pinfo.setLx(cursor.getDouble(10));
-				pinfo.setActivity(cursor.getString(11));
-				pins.add(pinfo);
+			do {
+				pins.add(getPinFromCursor(cursor));
 			} while (cursor.moveToNext());
 		}
 		
 		return pins;
+	}
+	
+	public PinInformation getPinFromCursor(Cursor cursor) {		
+		PinInformation pinfo = new PinInformation();
+		pinfo.setId(cursor.getInt(0));
+		pinfo.setTime(cursor.getLong(1));
+		pinfo.setLongitude(cursor.getFloat(2));
+		pinfo.setLatitude(cursor.getFloat(3));
+		pinfo.setAccel_x(cursor.getFloat(4));
+		pinfo.setAccel_y(cursor.getFloat(5));
+		pinfo.setAccel_z(cursor.getFloat(6));
+		pinfo.setOrient_x(cursor.getFloat(7));
+		pinfo.setOrient_y(cursor.getFloat(8));
+		pinfo.setOrient_z(cursor.getFloat(9));
+		pinfo.setLx(cursor.getDouble(10));
+		pinfo.setActivity(cursor.getString(11));
+		return pinfo;		
 	}
 	
 	public int getPinCount() {
@@ -145,6 +138,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.delete(TABLE_PINFO, KEY_ID + " = ?", new String[] { String.valueOf(pin.getId()) } );
 		db.close();
+	}
+	
+	public void updatePin(PinInformation pinfo) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		
+		ContentValues values = new ContentValues();
+	    values.put(KEY_TIME, pinfo.getTime());	
+	    values.put(KEY_LONGITUDE, pinfo.getLongitude());
+	    values.put(KEY_LATITUDE, pinfo.getLatitude());
+	    values.put(KEY_ACCEL_X, pinfo.getAccel_x());
+	    values.put(KEY_ACCEL_Y, pinfo.getAccel_y());
+	    values.put(KEY_ACCEL_Z, pinfo.getAccel_z());
+	    values.put(KEY_ORIENT_X, pinfo.getOrient_x());
+	    values.put(KEY_ORIENT_Y, pinfo.getOrient_y());
+	    values.put(KEY_ORIENT_Z, pinfo.getOrient_z());
+	    values.put(KEY_LX, pinfo.getLx());
+	    values.put(KEY_ACTIVITY, pinfo.getActivity());
+	    
+	    db.update(TABLE_PINFO, values, KEY_ID + " = ?",
+	            new String[] { String.valueOf(pinfo.getId()) });
 	}
 	
 	public void clearAll() {
