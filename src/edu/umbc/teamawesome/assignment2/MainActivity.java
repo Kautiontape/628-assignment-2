@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class MainActivity extends Activity implements SensorEventListener {
 	
@@ -79,7 +81,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			if(distance > 100) {
 				this.newLocation = newLocation;
 				saveInformation();
-				updateMap();
+				updateList();
 				this.lastLocation = newLocation;
 			}
 		} else {
@@ -89,7 +91,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 	}
 	
-	private void updateMap() {
+	private void updateList() {
+		ListView lv = (ListView)findViewById(R.id.pinList);
+		ArrayAdapter<PinInformation> adapter = new ArrayAdapter<PinInformation>(getApplicationContext(), android.R.layout.simple_list_item_1, db.getAllPins());
+		lv.setAdapter(adapter);
 	}
 	
 	private void registerLocationListener() {
