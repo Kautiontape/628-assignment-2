@@ -128,9 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public int getPinCount() {
 		String count = "SELECT * FROM " + TABLE_PINFO;
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(count, null);
-		cursor.close();
-		
+		Cursor cursor = db.rawQuery(count, null);		
 		return cursor.getCount();
 	}
 	
