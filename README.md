@@ -33,3 +33,9 @@ address.
 
 The submission would be similar to the last assignment. Please make a video on youtube and share it
 with the TA and the instructor. Also share your source code on the google site page.
+
+Plan
+----------------
+The plan is located at the following Google Doc: https://docs.google.com/document/d/1HM47WwcZ5xahb573huM9A3q03UCu2I8RQdJaIGZSZcI/edit#heading=h.w13ctqrwduxp
+
+
