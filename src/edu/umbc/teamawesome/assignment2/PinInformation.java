@@ -7,13 +7,13 @@ public class PinInformation {
 	double latitude;
 	double longitude;
 	
-	double accel_x;
-	double accel_y;
-	double accel_z;
+	float accel_x;
+	float accel_y;
+	float accel_z;
 	
-	double orient_x;
-	double orient_y;
-	double orient_z;
+	float orient_x;
+	float orient_y;
+	float orient_z;
 	
 	double lx;
 	
@@ -53,51 +53,51 @@ public class PinInformation {
 		this.longitude = longitude;
 	}
 
-	public double getAccel_x() {
+	public float getAccel_x() {
 		return accel_x;
 	}
 
-	public void setAccel_x(double accel_x) {
+	public void setAccel_x(float accel_x) {
 		this.accel_x = accel_x;
 	}
 
-	public double getAccel_y() {
+	public float getAccel_y() {
 		return accel_y;
 	}
 
-	public void setAccel_y(double accel_y) {
+	public void setAccel_y(float accel_y) {
 		this.accel_y = accel_y;
 	}
 
-	public double getAccel_z() {
+	public float getAccel_z() {
 		return accel_z;
 	}
 
-	public void setAccel_z(double accel_z) {
+	public void setAccel_z(float accel_z) {
 		this.accel_z = accel_z;
 	}
 
-	public double getOrient_x() {
+	public float getOrient_x() {
 		return orient_x;
 	}
 
-	public void setOrient_x(double orient_x) {
+	public void setOrient_x(float orient_x) {
 		this.orient_x = orient_x;
 	}
 
-	public double getOrient_y() {
+	public float getOrient_y() {
 		return orient_y;
 	}
 
-	public void setOrient_y(double orient_y) {
+	public void setOrient_y(float orient_y) {
 		this.orient_y = orient_y;
 	}
 
-	public double getOrient_z() {
+	public float getOrient_z() {
 		return orient_z;
 	}
 
-	public void setOrient_z(double orient_z) {
+	public void setOrient_z(float orient_z) {
 		this.orient_z = orient_z;
 	}
 
