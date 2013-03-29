@@ -3,6 +3,7 @@ package edu.umbc.teamawesome.assignment2;
 import java.util.Date;
 import java.util.Locale;
 
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,8 +21,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements SensorEventListener {
@@ -34,7 +37,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private float[] orient_r = new float[9];
 	private float[] orient = new float[3];
 	private float[] magnet = new float[3];
-	private double lx = 0;
+	private double lx = 0;	
+	private String activity = "";
 	
 	private int pins = 0;
 
@@ -47,8 +51,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		registerSensorListeners();
 		registerInterfaceListeners();
 		
-		db = new DatabaseHandler(this);
-		db.clearAll();
+		instantiateFromDatabase();
+		updatePins();
 	}
 	
 	private void newLocation(Location newLocation) {
@@ -68,9 +72,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 		updatePins();
 	}
 	
-	private void saveInformation() {
+	private void saveInformation() {		
 		PinInformation pin = new PinInformation();
-		pin.setId(pins);
+		pin.setId(++pins); // Pin count is updated here
 		pin.setTime(System.currentTimeMillis());
 		pin.setLongitude(newLocation.getLongitude());
 		pin.setLatitude(newLocation.getLatitude());
@@ -81,14 +85,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 		pin.setOrient_y(orient[1]);
 		pin.setOrient_z(orient[2]);
 		pin.setLx(lx);
-		pin.setActivity("");
+		pin.setActivity(activity);
 		
 		Log.d(getPackageName(), "Added new pin");
 		
 		db.addEntry(pin);
-		promptActivity(pin.getId());
-		
-		pins++;
 	}
 	
 	private void updatePins() {
@@ -98,8 +99,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	}
 	
 	// http://www.androidsnippets.com/prompt-user-input-with-an-alertdialog
-	private void promptActivity(int id) {
-		final int pinid = id + 1; // TODO: Figure out why I have to add 1
+	private void promptActivity() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("628 Assignment 2");
 		alert.setMessage("What are you currently doing?");
@@ -107,26 +107,18 @@ public class MainActivity extends Activity implements SensorEventListener {
 		final EditText input = new EditText(this);
 		alert.setView(input);
 		
-		alert.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-				String activity = input.getText().toString();
-				updatePinActivity(pinid, activity);
-				updatePins();
+				activity = input.getText().toString();
+				updateActivityView();
 			 }
 		});
 
-		alert.setNegativeButton("Nothing", new DialogInterface.OnClickListener() {
+		alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 		  public void onClick(DialogInterface dialog, int whichButton) {}
 		});
 		
 		alert.show();
-	}
-	
-	private void updatePinActivity(int pinid, String activity) {
-		PinInformation pin = db.getPin(pinid);
-		pin.setActivity(activity);
-		db.updatePin(pin);
-		Log.d(getPackageName(), "Updated pin " + pinid);
 	}
 	
 	private void registerSensorListeners() {
@@ -138,9 +130,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
 		manager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
 		manager.registerListener(this, light, SensorManager.SENSOR_DELAY_UI);
-		
-		SensorManager.getRotationMatrix(orient_r, null, accel, magnet);
-		SensorManager.getOrientation(orient_r, orient);
 	}
 	
 	private void registerInterfaceListeners() {
@@ -163,6 +152,23 @@ public class MainActivity extends Activity implements SensorEventListener {
 						pin.getActivity()
 				);
 				Toast.makeText(getApplicationContext(), disp, Toast.LENGTH_SHORT).show();
+			}
+		});
+		
+		Button buttonClear = (Button)findViewById(R.id.buttonClear);
+		buttonClear.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				db.clearAll();
+				updatePins();
+			}
+		});
+		
+		TextView activityText = (TextView)findViewById(R.id.textActivity);
+		activityText.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				promptActivity();
 			}
 		});
 	}
@@ -189,6 +195,31 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 	}
+	
+	private void instantiateFromDatabase() {		
+		db = new DatabaseHandler(this);
+		pins = db.getPinCount();
+		if(pins > 0) {
+			PinInformation lastPin = db.getPin(pins);
+			Location loc = new Location(LOCATION_SERVICE);
+			loc.setLatitude(lastPin.getLatitude());
+			loc.setLongitude(lastPin.getLongitude());
+			newLocation = lastLocation = loc;
+			activity = lastPin.getActivity();
+			updateActivityView();
+		}
+	}
+	
+	private void updateActivityView() {
+		TextView t = (TextView)findViewById(R.id.textActivity);
+		if(activity.trim().length() == 0) {
+			t.setText(R.string.noactivity);
+			t.setTypeface(null, Typeface.ITALIC);
+		} else {
+			t.setText(activity);
+			t.setTypeface(null, Typeface.NORMAL);
+		}		
+	}
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {}
@@ -210,6 +241,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 		default:
 			break;
 		}
+		
+		SensorManager.getRotationMatrix(orient_r, null, accel, magnet);
+		SensorManager.getOrientation(orient_r, orient);
 	}
 
 	@Override
