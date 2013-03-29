@@ -244,10 +244,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 			this.magnet[0] = event.values[0];
 			this.magnet[1] = event.values[1];
 			this.magnet[2] = event.values[2];
+			break;
 		case Sensor.TYPE_LIGHT:
 			this.lx = event.values[0];
+			break;
 		case Sensor.TYPE_PROXIMITY:
 			this.prox = event.values[0];
+			break;
 		default:
 			break;
 		}
