@@ -38,6 +38,7 @@ import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
 
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,7 +77,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//createTabBar();
+		createTabBar();
         
 		registerLocationListener();
 		registerSensorListeners();
@@ -234,9 +235,36 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	}
 	
 	private void registerInterfaceListeners() {	
-//		ListView lv = (ListView)findViewById(R.id.pinList);
-//		lv_adapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, pinList);
-//		lv.setAdapter(lv_adapter);
+		ListView lv = (ListView)findViewById(R.id.pinList);
+		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				PinInformation pin = (PinInformation)arg0.getItemAtPosition(position);
+				
+				String address = "";
+				Address revGeo = pin.getAddress(getApplicationContext());
+				if(revGeo != null) address = revGeo.getAddressLine(0) + "\n" + revGeo.getAddressLine(1);
+				
+				String time = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime()));
+				String disp = String.format(Locale.US,
+						"Time: %s" + 
+						(address.length() > 0 ? "%nAddress: " + address : "") +
+						"%n<%f, %f>" +
+						"%nAcceleration: (%.2f, %.2f, %.2f)" +
+						"%nOrientation: (%.2f, %.2f, %.2f)" +
+						"%nLx: %.2f" +
+						"%nProximity: %.2f" +
+						(pin.getActivity().length() > 0 ? "%nActivity: " + pin.getActivity() : ""),
+						time,
+						pin.getLongitude(), pin.getLatitude(), pin.getAccel_x(), 
+						pin.getAccel_y(), pin.getAccel_z(), pin.getOrient_x(), 
+						pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), pin.getProx()
+				);
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+				builder.setMessage(disp).setTitle(pin.activity.length() > 0 ? pin.activity : "Marker");
+				builder.show();
+			}
+		});
 		
 		Button buttonClear = (Button)findViewById(R.id.buttonClear);
 		buttonClear.setOnClickListener(new View.OnClickListener() {
@@ -354,10 +382,16 @@ public class MainActivity extends Activity implements SensorEventListener  {
 					
 					@Override
 					public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+						findViewById(R.id.pinList).setVisibility(View.GONE);
+						findViewById(R.id.buttonClear).setVisibility(View.VISIBLE);
+						findViewById(R.id.textActivity).setVisibility(View.VISIBLE);
 					}
 					
 					@Override
 					public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+						findViewById(R.id.pinList).setVisibility(View.VISIBLE);
+						findViewById(R.id.buttonClear).setVisibility(View.GONE);
+						findViewById(R.id.textActivity).setVisibility(View.GONE);
 					}
 					
 					@Override
