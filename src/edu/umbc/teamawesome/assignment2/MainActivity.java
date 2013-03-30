@@ -146,22 +146,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		Address revGeo = pin.getAddress(this);
 		if(revGeo != null) address = revGeo.getAddressLine(0) + "\n" + revGeo.getAddressLine(1);
 		
-		String time = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime()));
-		String disp = String.format(Locale.US,
-				"Time: %s" + 
-				(address.length() > 0 ? "%nAddress: " + address : "") +
-				"%n<%f, %f>" +
-				"%nAcceleration: (%.2f, %.2f, %.2f)" +
-				"%nOrientation: (%.2f, %.2f, %.2f)" +
-				"%nLx: %.2f" +
-				"%nProximity: %.2f" +
-				(pin.getActivity().length() > 0 ? "%nActivity: " + pin.getActivity() : ""),
-				time,
-				pin.getLongitude(), pin.getLatitude(), pin.getAccel_x(), 
-				pin.getAccel_y(), pin.getAccel_z(), pin.getOrient_x(), 
-				pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), pin.getProx()
-		);
-		marker.snippet(disp);
+		
+		marker.snippet(pin.getSnippet(this));
 		
 		map.addMarker(marker);
 	}

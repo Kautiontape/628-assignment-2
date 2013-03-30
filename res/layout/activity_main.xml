@@ -29,6 +29,9 @@
 	    android:id="@+id/buttonClear"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentLeft="true"
+		android:layout_marginBottom="35dp"
 	    android:text="@string/clearpins"
          android:background="#CCEEEEEE" />
 
@@ -36,11 +39,12 @@
          android:id="@+id/textActivity"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
+         android:layout_alignParentTop="true"
          android:layout_alignParentLeft="true"
          android:background="#CCEEEEEE"
          android:padding="10dp"
+         
          android:text="@string/noactivity"
-         android:textStyle="italic" />
+         android:textStyle="bold|italic" />
 
 </RelativeLayout>

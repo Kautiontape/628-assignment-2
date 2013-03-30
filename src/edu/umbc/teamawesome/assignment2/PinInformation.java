@@ -156,6 +156,34 @@ public class PinInformation {
 	
 	@Override
 	public String toString() {
-		return String.valueOf(getId()) + ": " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(getTime()));
+		if(getActivity() != null && !getActivity().isEmpty())
+			return String.valueOf(getId()) + ": " + getActivity() + ": " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new Date(getTime()));
+		return String.valueOf(getId()) +  ": " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new Date(getTime()));
 	}
+	
+	public String getSnippet(Context context)
+	{
+		String address = "";
+		Address revGeo = getAddress(context);
+		if(revGeo != null) address = revGeo.getAddressLine(0) + "\n" + revGeo.getAddressLine(1);
+		
+		String time = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new Date(getTime()));
+		String disp = String.format(Locale.US,
+				"Time: %s" + 
+				(address.length() > 0 ? "%nAddress: " + address : "") +
+				"%n<%f, %f>" +
+				"%nAcceleration: (%.2f, %.2f, %.2f)" +
+				"%nOrientation: (%.2f, %.2f, %.2f)" +
+				"%nLx: %.2f" +
+				"%nProximity: %.2f" +
+				(getActivity().length() > 0 ? "%nActivity: " + getActivity() : ""),
+				time,
+				getLongitude(), getLatitude(), getAccel_x(), 
+				getAccel_y(), getAccel_z(), getOrient_x(), 
+				getOrient_y(), getOrient_z(), getLx(), getProx()
+		);
+		
+		return disp;
+	}
+	
 }
