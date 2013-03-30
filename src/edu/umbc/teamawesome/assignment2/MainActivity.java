@@ -38,8 +38,10 @@ import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
 
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements SensorEventListener  {
@@ -55,6 +57,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	private float lx = 0;
 	private float prox = 0;
 	private String activity = "";
+	
+	private ArrayAdapter<PinInformation> pinListAdapter;
 	
 	private int pins = 0;
 
@@ -124,7 +128,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		Log.d(getPackageName(), "Added new pin");
 		
 		db.addEntry(pin);
-		
+		pinList.add(pin);
+		pinListAdapter.add(pin);
+		pinListAdapter.notifyDataSetChanged();
 		addMarker(pin);
 	}
 	
@@ -162,9 +168,26 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	private void updatePins() 
 	{
 		pinList = db.getAllPins();
-		//lv_adapter.notifyDataSetChanged();
+		ListView lv = (ListView)findViewById(R.id.pinList);
 		
-		if(map != null) {
+		if(pinListAdapter == null)
+		{
+			pinListAdapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, pinList);
+		}
+		else
+		{
+			pinListAdapter.clear();
+			pinListAdapter.addAll(pinList);
+			pinListAdapter.notifyDataSetChanged();
+		}
+		
+		if(lv != null && lv.getAdapter() == null)
+		{
+			lv.setAdapter(pinListAdapter);
+		}
+		
+		if(map != null && pinList != null)
+		{
 			map.clear();
 			
 			for(PinInformation pin: pinList)
@@ -394,7 +417,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	@Override
 	public void onResume()
 	{
-		
+		updatePins();
+
 		if(map == null && mapFragment != null)
 		{
 			map = mapFragment.getMap();
