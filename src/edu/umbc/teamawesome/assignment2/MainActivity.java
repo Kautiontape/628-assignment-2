@@ -21,6 +21,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.app.ActionBar;
+import android.app.ActionBar.TabListener;
 import android.app.Activity;
 
 import android.app.AlertDialog;
@@ -29,9 +31,8 @@ import android.content.DialogInterface;
 import android.util.Log;
 
 import android.app.FragmentTransaction;
-import android.content.Context;
+import android.app.ActionBar.Tab;
 
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,6 +70,62 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		final ActionBar bar = getActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+		
+        bar.addTab(bar.newTab()
+                .setText("Map")
+                .setTabListener(new TabListener() {
+					
+					@Override
+					public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+
+						if(mapFragment != null && mapFragment.isVisible())
+						{
+							FragmentTransaction fragmentTransaction =
+									getFragmentManager().beginTransaction();
+							fragmentTransaction.hide(mapFragment);
+							fragmentTransaction.commit();
+						}
+					}
+
+					@Override
+					public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+						if(mapFragment != null && !mapFragment.isVisible())
+						{
+							FragmentTransaction fragmentTransaction =
+									getFragmentManager().beginTransaction();
+							fragmentTransaction.show(mapFragment);
+							fragmentTransaction.commit();
+						}
+					}
+					
+					@Override
+					public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+						
+					}
+				}));
+        bar.addTab(bar.newTab()
+                .setText("Pins")
+                .setTabListener(new TabListener() {
+					
+					@Override
+					public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+						
+					}
+					
+					@Override
+					public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+						
+					}
+					
+					@Override
+					public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+						
+					}
+				}));
+        
 		registerLocationListener();
 		registerSensorListeners();
 		registerInterfaceListeners();
@@ -82,7 +139,6 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 		         getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.map_container, mapFragment);
 		fragmentTransaction.commit();
-		
 		 
 		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 10, this);
@@ -299,9 +355,10 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 	@Override
 	public void onResume()
 	{
-		if(map == null)
+		
+		if(map == null && mapFragment != null)
 		{
-			map = ((MapFragment)getFragmentManager().findFragmentById(R.id.map_container)).getMap();
+			map = mapFragment.getMap();
 			map.setMyLocationEnabled(true);
 		}
 		Location currentLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
@@ -313,12 +370,6 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 		
 	    super.onResume();
 	}	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
 
 
 	@Override
