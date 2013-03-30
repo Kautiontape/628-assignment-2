@@ -3,12 +3,16 @@ package edu.umbc.teamawesome.assignment2;
 import java.util.Date;
 import java.util.Locale;
 
+import android.location.Address;
+
 public class PinInformation {
 	int id;
 	long time;
 	
 	double latitude;
 	double longitude;
+	
+	Address address;
 	
 	float accel_x;
 	float accel_y;
@@ -33,6 +37,56 @@ public class PinInformation {
 		this.id = id;
 	}
 
+	public Address getAddress() {
+		return address;
+	}
+
+	public String getAddressString() {
+		String addressString = "";
+		if(address != null)
+		{
+			String tempString = address.getAddressLine(0);
+			if(tempString != null && !tempString.isEmpty())
+			{
+				addressString += tempString + ", ";
+			}
+			
+			tempString = address.getAddressLine(1);
+			if(tempString != null && !tempString.isEmpty())
+			{
+				addressString += tempString + ", ";
+			}
+			
+			tempString = address.getLocality();
+			if(tempString != null && !tempString.isEmpty())
+			{
+				addressString += tempString + ", ";
+			}
+			
+			tempString = address.getAdminArea();
+			if(tempString != null && !tempString.isEmpty())
+			{
+				addressString += tempString + " ";
+			}
+			
+			tempString = address.getPostalCode();
+			if(tempString != null && !tempString.isEmpty())
+			{
+				addressString += tempString;
+			}
+		}
+		return addressString;
+	}
+	
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+	
+	public String getDate()
+	{
+		return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(getTime()));
+	}
+	
 	public long getTime() {
 		return time;
 	}

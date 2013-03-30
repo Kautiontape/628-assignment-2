@@ -203,7 +203,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		
 		if(addressList != null && !addressList.isEmpty())
 		{
-			//pin.addAddress(addressList.get(0);
+			pin.setAddress(addressList.get(0));
 		}
 		
 		db.addEntry(pin);
@@ -218,7 +218,16 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		MarkerOptions marker = new MarkerOptions();
 		marker.draggable(false);
 		marker.position(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()));
-		marker.title(activity);
+		
+		if(pin.getActivity() != null && !pin.getActivity().isEmpty())
+		{
+			marker.title(activity);
+		}
+		else if(pin.getAddress() != null && !pin.getAddress().isEmpty())
+		{
+			marker.title(pin.getAddress());
+		}
+		
 		marker.snippet(pin.toString());
 		
 		map.addMarker(marker);
@@ -310,7 +319,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 						"%nProximity: %.2f" +
 						(address.length() > 0 ? "%nAddress: " + address : "") +
 						(pin.getActivity().length() > 0 ? "%nActivity: " + pin.getActivity() : ""),
-						new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime())),
+						pin.getDate(),
 						pin.getLongitude(), pin.getLatitude(), pin.getAccel_x(), 
 						pin.getAccel_y(), pin.getAccel_z(), pin.getOrient_x(), 
 						pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), pin.getProx()
