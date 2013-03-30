@@ -1,7 +1,13 @@
 package edu.umbc.teamawesome.assignment2;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 
 public class PinInformation {
 	int id;
@@ -24,6 +30,25 @@ public class PinInformation {
 	String activity;
 	
 	public PinInformation() {}
+	
+	public Address getAddress(Context c) {
+		
+		List<Address> addressList = null;
+		Geocoder geocoder = new Geocoder(c, Locale.getDefault());   
+		try {
+			addressList = geocoder.getFromLocation(getLatitude(), getLongitude(), 1);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(addressList != null && !addressList.isEmpty())
+		{
+			return addressList.get(0);
+		}
+		return null;
+		
+	}
 
 	public int getId() {
 		return id;

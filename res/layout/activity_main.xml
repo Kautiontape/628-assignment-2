@@ -24,13 +24,13 @@
 
      <TextView
          android:id="@+id/textActivity"
-         android:layout_width="fill_parent"
+         android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
          android:layout_alignParentLeft="true"
-         android:text="@string/noactivity"
-         android:textStyle="italic"
          android:background="#CCEEEEEE"
-         android:padding="10dp" />
+         android:padding="10dp"
+         android:text="@string/noactivity"
+         android:textStyle="italic" />
 
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package edu.umbc.teamawesome.assignment2;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.location.Criteria;
 
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -81,7 +79,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		registerInterfaceListeners();
 		
 		createMap();
-		 
+		
 		instantiateFromDatabase();
 		updatePins();
 	}
@@ -105,8 +103,6 @@ public class MainActivity extends Activity implements SensorEventListener  {
 			this.newLocation = newLocation;
 			saveInformation();
 		}
-		
-		updatePins();
 	}
 	
 	private void saveInformation() {		
@@ -127,20 +123,6 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		
 		Log.d(getPackageName(), "Added new pin");
 		
-		List<Address> addressList = null;
-		Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());   
-		try {
-			addressList = geocoder.getFromLocation(newLocation.getLatitude(), newLocation.getLongitude(), 1);
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if(addressList != null && !addressList.isEmpty())
-		{
-			//pin.addAddress(addressList.get(0);
-		}
-		
 		db.addEntry(pin);
 		
 		addMarker(pin);
@@ -150,21 +132,24 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	{
 		MarkerOptions marker = new MarkerOptions();
 		marker.draggable(false);
-		marker.position(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()));
-		marker.title(activity);
+		marker.position(new LatLng(pin.getLatitude(), pin.getLongitude()));
+		marker.title(pin.activity.length() > 0 ? pin.activity : "Marker");
 		
 		String address = "";
+		Address revGeo = pin.getAddress(this);
+		if(revGeo != null) address = revGeo.getAddressLine(0) + "\n" + revGeo.getAddressLine(1);
 		
+		String time = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime()));
 		String disp = String.format(Locale.US,
 				"Time: %s" + 
+				(address.length() > 0 ? "%nAddress: " + address : "") +
 				"%n<%f, %f>" +
-				"%nAccel: (%.2f, %.2f, %.2f)" +
-				"%nOrient: (%.2f, %.2f, %.2f)" +
+				"%nAcceleration: (%.2f, %.2f, %.2f)" +
+				"%nOrientation: (%.2f, %.2f, %.2f)" +
 				"%nLx: %.2f" +
 				"%nProximity: %.2f" +
-				(address.length() > 0 ? "%nAddress: " + address : "") +
 				(pin.getActivity().length() > 0 ? "%nActivity: " + pin.getActivity() : ""),
-				new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US).format(new Date(pin.getTime())),
+				time,
 				pin.getLongitude(), pin.getLatitude(), pin.getAccel_x(), 
 				pin.getAccel_y(), pin.getAccel_z(), pin.getOrient_x(), 
 				pin.getOrient_y(), pin.getOrient_z(), pin.getLx(), pin.getProx()
@@ -179,8 +164,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		pinList = db.getAllPins();
 		//lv_adapter.notifyDataSetChanged();
 		
-		if(map != null)
-		{
+		if(map != null) {
 			map.clear();
 			
 			for(PinInformation pin: pinList)
@@ -272,16 +256,20 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 	}
 	
-	private void createMap() {
+	private void createMap() {		
 		GoogleMapOptions options = new GoogleMapOptions();
 		
 		options.mapType(GoogleMap.MAP_TYPE_NORMAL).compassEnabled(true).rotateGesturesEnabled(true).tiltGesturesEnabled(true);
-		mapFragment = MapFragment.newInstance(options);
 		
-		FragmentTransaction fragmentTransaction =
-		         getFragmentManager().beginTransaction();
-		fragmentTransaction.add(R.id.map_container, mapFragment);
-		fragmentTransaction.commit();
+		if(mapFragment == null)
+		{
+			mapFragment = MapFragment.newInstance(options);
+		
+			FragmentTransaction fragmentTransaction =
+					getFragmentManager().beginTransaction();
+			fragmentTransaction.add(R.id.map_container, mapFragment);
+			fragmentTransaction.commit();
+		}
 	}
 	
 	private void instantiateFromDatabase() {		
@@ -411,6 +399,10 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		{
 			map = mapFragment.getMap();
 			map.setMyLocationEnabled(true);
+			
+			map.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
+			
+			updatePins();
 		}
 		
 		Location currentLocation = null;
@@ -426,5 +418,4 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		
 	    super.onResume();
 	}	
-
 }
