@@ -37,4 +37,10 @@
         android:text="@string/noactivity"
         android:textStyle="italic" />
 
+    <LinearLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </LinearLayout>
+
 </RelativeLayout>

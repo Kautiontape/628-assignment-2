@@ -30,6 +30,7 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+
 	<filteredResources>
 		<filter>
 			<id>1364593150739</id>
@@ -50,4 +51,5 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+
 </projectDescription>
