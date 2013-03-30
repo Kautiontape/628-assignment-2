@@ -62,6 +62,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	private float prox = 0;
 	private String activity = "";
 	
+	private ArrayAdapter<PinInformation> pinListAdapter;
+	
 	private int pins = 0;
 
 	private static int defaultZoomLevel = 18;
@@ -172,7 +174,6 @@ public class MainActivity extends Activity implements SensorEventListener  {
 			saveInformation();
 		}
 		
-		updatePins();
 	}
 	
 	private void saveInformation() {		
@@ -227,10 +228,23 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	{
 		pinList = db.getAllPins();
 		ListView lv = (ListView)findViewById(R.id.pinList);
-		ArrayAdapter<PinInformation> adapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, pinList);
-		lv.setAdapter(adapter);
 		
-		if(map != null)
+		if(pinListAdapter == null)
+		{
+			pinListAdapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, pinList);
+		}
+		else
+		{
+			pinListAdapter.clear();
+			pinListAdapter.addAll(pinList);
+		}
+		
+		if(lv.getAdapter() == null)
+		{
+			lv.setAdapter(pinListAdapter);
+		}
+		
+		if(map != null && pinList != null)
 		{
 			map.clear();
 			
@@ -410,7 +424,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	@Override
 	public void onResume()
 	{
-		
+		updatePins();
+
 		if(map == null && mapFragment != null)
 		{
 			map = mapFragment.getMap();
