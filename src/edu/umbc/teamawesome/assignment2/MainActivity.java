@@ -156,8 +156,6 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	
 	private void newLocation(Location newLocation) 
 	{
-		//this only records the new location if it's a 100m+ step, since the last location update, but shouldn't lastLocation
-		//only update once newLocation has more than 100m difference instead? so in the else statement, lastLocation doesn't update?
 		if(lastLocation != null) 
 		{
 			float distance = lastLocation.distanceTo(newLocation);
@@ -209,7 +207,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		}
 		
 		db.addEntry(pin);
-		
+		pinList.add(pin);
+		pinListAdapter.add(pin);
+		pinListAdapter.notifyDataSetChanged();
 		addMarker(pin);
 	}
 	
@@ -237,9 +237,10 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		{
 			pinListAdapter.clear();
 			pinListAdapter.addAll(pinList);
+			pinListAdapter.notifyDataSetChanged();
 		}
 		
-		if(lv.getAdapter() == null)
+		if(lv != null && lv.getAdapter() == null)
 		{
 			lv.setAdapter(pinListAdapter);
 		}
