@@ -57,7 +57,7 @@ public class MainActivity extends Activity implements LocationListener
 		}
 		Location currentLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
 
-		if(currentLocation =! null)
+		if(currentLocation != null)
 		{
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), defaultZoomLevel));
 		}
