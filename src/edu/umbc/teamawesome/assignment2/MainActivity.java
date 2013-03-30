@@ -1,6 +1,8 @@
 package edu.umbc.teamawesome.assignment2;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.graphics.Typeface;
@@ -14,9 +16,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.location.Criteria;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -63,6 +69,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	GoogleMap map;
 	MapFragment mapFragment;
 	LocationManager locationManager;
+	List<PinInformation> pinList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -143,7 +150,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	
 	private void newLocation(Location newLocation) 
 	{
-		//
+		//this only records the new location if it's a 100m+ step, since the last location update, but shouldn't lastLocation
+		//only update once newLocation has more than 100m difference instead? so in the else statement, lastLocation doesn't update?
 		if(lastLocation != null) 
 		{
 			float distance = lastLocation.distanceTo(newLocation);
@@ -181,13 +189,52 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		
 		Log.d(getPackageName(), "Added new pin");
 		
+		List<Address> addressList = null;
+		Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());   
+		try {
+			addressList = geocoder.getFromLocation(newLocation.getLatitude(), newLocation.getLongitude(), 1);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(addressList != null && !addressList.isEmpty())
+		{
+			//pin.addAddress(addressList.get(0);
+		}
+		
 		db.addEntry(pin);
+		
+		addMarker(pin);
 	}
 	
-	private void updatePins() {
+	private void addMarker(PinInformation pin)
+	{
+		MarkerOptions marker = new MarkerOptions();
+		marker.draggable(false);
+		marker.position(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()));
+		marker.title(activity);
+		marker.snippet(pin.toString());
+		
+		map.addMarker(marker);
+	}
+	
+	private void updatePins() 
+	{
+		pinList = db.getAllPins();
 		ListView lv = (ListView)findViewById(R.id.pinList);
-		ArrayAdapter<PinInformation> adapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, db.getAllPins());
+		ArrayAdapter<PinInformation> adapter = new ArrayAdapter<PinInformation>(this, android.R.layout.simple_list_item_1, pinList);
 		lv.setAdapter(adapter);
+		
+		if(map != null)
+		{
+			map.clear();
+			
+			for(PinInformation pin: pinList)
+			{
+				addMarker(pin);
+			}
+		}
 	}
 	
 	// http://www.androidsnippets.com/prompt-user-input-with-an-alertdialog
@@ -272,7 +319,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	}
 	
 	private void registerLocationListener() {
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		LocationListener locationListener = new LocationListener() {
 			
@@ -308,12 +355,16 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		}
 	}
 	
-	private void updateActivityView() {
+	private void updateActivityView() 
+	{
 		TextView t = (TextView)findViewById(R.id.textActivity);
-		if(activity.trim().length() == 0) {
+		if(activity.trim().length() == 0) 
+		{
 			t.setText(R.string.noactivity);
 			t.setTypeface(null, Typeface.ITALIC);
-		} else {
+		} 
+		else 
+		{
 			t.setText(activity);
 			t.setTypeface(null, Typeface.NORMAL);
 		}		
@@ -323,7 +374,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	public void onAccuracyChanged(Sensor arg0, int arg1) {}
 
 	@Override
-	public void onSensorChanged(SensorEvent event) {
+	public void onSensorChanged(SensorEvent event) 
+	{
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_ACCELEROMETER:
 			this.accel[0] = event.values[0];
@@ -360,39 +412,19 @@ public class MainActivity extends Activity implements SensorEventListener  {
 			map = mapFragment.getMap();
 			map.setMyLocationEnabled(true);
 		}
-		Location currentLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
-
-		if(currentLocation != null)
+		
+		Location currentLocation = null;
+		if(locationManager != null)
 		{
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), defaultZoomLevel));
+			currentLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
+			
+			if(currentLocation != null)
+			{
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), defaultZoomLevel));
+			}
 		}
 		
 	    super.onResume();
 	}	
-
-//
-//	@Override
-//	public void onLocationChanged(Location arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void onProviderDisabled(String arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void onProviderEnabled(String arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 }
