@@ -137,13 +137,17 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		GoogleMapOptions options = new GoogleMapOptions();
 		
 		options.mapType(GoogleMap.MAP_TYPE_NORMAL).compassEnabled(true).rotateGesturesEnabled(true).tiltGesturesEnabled(true);
-		mapFragment = MapFragment.newInstance(options);
 		
-		FragmentTransaction fragmentTransaction =
-		         getFragmentManager().beginTransaction();
-		fragmentTransaction.add(R.id.map_container, mapFragment);
-		fragmentTransaction.commit();
-		 
+		if(mapFragment == null)
+		{
+			mapFragment = MapFragment.newInstance(options);
+		
+			FragmentTransaction fragmentTransaction =
+					getFragmentManager().beginTransaction();
+			fragmentTransaction.add(R.id.map_container, mapFragment);
+			fragmentTransaction.commit();
+		}
+		
 		instantiateFromDatabase();
 		updatePins();
 	}
