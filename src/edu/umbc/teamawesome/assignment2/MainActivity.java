@@ -223,9 +223,13 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		{
 			marker.title(activity);
 		}
-		else if(pin.getAddress() != null && !pin.getAddress().isEmpty())
+		else if(pin.getAddress() != null && !pin.getAddressString().isEmpty())
 		{
-			marker.title(pin.getAddress());
+			marker.title(pin.getAddressString());
+		}
+		else
+		{
+			marker.title("Unlabelled Activity");
 		}
 		
 		marker.snippet(pin.toString());
