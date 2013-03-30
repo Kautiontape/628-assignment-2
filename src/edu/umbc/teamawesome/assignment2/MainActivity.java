@@ -42,7 +42,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements SensorEventListener, LocationListener  {
+public class MainActivity extends Activity implements SensorEventListener  {
 	
 	DatabaseHandler db = null;
 	
@@ -112,17 +112,14 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 					
 					@Override
 					public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-						
 					}
 					
 					@Override
 					public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-						
 					}
 					
 					@Override
 					public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-						
 					}
 				}));
         
@@ -140,22 +137,24 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 		fragmentTransaction.add(R.id.map_container, mapFragment);
 		fragmentTransaction.commit();
 		 
-		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 10, this);
-
 		instantiateFromDatabase();
 		updatePins();
 	}
 	
-	private void newLocation(Location newLocation) {
-		if(lastLocation != null) {
+	private void newLocation(Location newLocation) 
+	{
+		//
+		if(lastLocation != null) 
+		{
 			float distance = lastLocation.distanceTo(newLocation);
 			if(distance > 100) {
 				this.newLocation = newLocation;
 				saveInformation();
 				this.lastLocation = newLocation;
 			}
-		} else {
+		}
+		else 
+		{
 			this.lastLocation = newLocation;
 			this.newLocation = newLocation;
 			saveInformation();
@@ -371,29 +370,29 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 	    super.onResume();
 	}	
 
-
-	@Override
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-		
-	}
+//
+//	@Override
+//	public void onLocationChanged(Location arg0) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void onProviderDisabled(String arg0) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void onProviderEnabled(String arg0) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 }
